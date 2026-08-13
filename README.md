@@ -13,15 +13,19 @@ This project is licensed under the GPL-3.0-only license
 
 ## Installation
 
-Start at your ILIAS root directory
-
 ```bash
-mkdir -p public/Customizing/global/plugins/Services/Repository/RepositoryObject
-cd public/Customizing/global/plugins/Services/Repository/RepositoryObject
-git clone git@github.com:bfeoldenburg/ILIAS10-Plugin_BfeAdminTools.git H5P
-```
+Im ILIAS-root-Verzeichnis:
+ mkdir -p public/Customizing/global/plugins/Services/Repository/RepositoryObject
+ cd public/Customizing/global/plugins/Services/Repository/RepositoryObject
+ git clone git@github.com:bfeoldenburg/ILIAS10-Plugin_BfeAdminTools.git H5P
 
-Update, activate and config the plugin in the ILIAS Plugin Administration
+Ins ILIAS-root-Verzeichnis wechseln, dann:
+ chown -R www-data:www-data .
+ sudo -u www-data composer du  (das Plugin wird sonst im nächsten Schritt nicht angezeigt)
+
+In ILIAS dann unter Administration - ILIAS erweitern - Plugins:
+ Update, activate and config the plugin in the ILIAS Plugin Administration
+```
 
 ## Description
 
