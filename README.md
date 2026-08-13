@@ -18,7 +18,7 @@ Start at your ILIAS root directory
 ```bash
 mkdir -p public/Customizing/global/plugins/Services/Repository/RepositoryObject
 cd public/Customizing/global/plugins/Services/Repository/RepositoryObject
-git clone git@github.com:bfeoldenburg/ILIAS10-Plugin_BfeAdminTools.git .
+git clone git@github.com:bfeoldenburg/ILIAS10-Plugin_BfeAdminTools.git H5P
 ```
 
 Update, activate and config the plugin in the ILIAS Plugin Administration
