@@ -17,7 +17,7 @@ This project is licensed under the GPL-3.0-only license
 Im ILIAS-root-Verzeichnis:
  mkdir -p public/Customizing/global/plugins/Services/Repository/RepositoryObject
  cd public/Customizing/global/plugins/Services/Repository/RepositoryObject
- git clone git@github.com:bfeoldenburg/ILIAS10-Plugin_BfeAdminTools.git H5P
+ git clone git@github.com:bfeoldenburg/ILIAS10-Plugin_H5P.git H5P
 
 Ins ILIAS-root-Verzeichnis wechseln, dann:
  chown -R www-data:www-data .
