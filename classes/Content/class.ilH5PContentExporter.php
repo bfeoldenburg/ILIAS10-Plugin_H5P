@@ -13,7 +13,7 @@ use ILIAS\Filesystem\Filesystem;
  */
 class ilH5PContentExporter
 {
-    protected const WEB_DIR = ILIAS_ABSOLUTE_PATH . '/' . ILIAS_WEB_DIR . '/' . CLIENT_ID;
+    protected const WEB_DIR = ILIAS_ABSOLUTE_PATH . '/public/' . ILIAS_WEB_DIR . '/' . CLIENT_ID;
     protected const STORAGE_DIR = ILIAS_DATA_DIR . '/' . CLIENT_ID;
 
     /**
@@ -132,7 +132,7 @@ class ilH5PContentExporter
      */
     protected function getAbsoluteH5pExportDir(): string
     {
-        return ILIAS_ABSOLUTE_PATH . '/' . IContainer::H5P_STORAGE_DIR . "/exports";
+        return ilH5PPlugin::getH5PStoragePath() . "/exports";
     }
 
     /**

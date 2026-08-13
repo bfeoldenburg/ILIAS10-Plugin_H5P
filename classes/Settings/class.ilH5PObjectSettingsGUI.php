@@ -85,10 +85,10 @@ class ilH5PObjectSettingsGUI extends ilH5PAbstractGUI
      */
     protected function setupCurrentTabs(ilH5PAccessHandler $access_handler, ilH5PGlobalTabManager $manager): void
     {
-        $manager->addUserRepositoryTabs();
+        $manager->addUserRepositoryTabs($this->object->getRefId());
 
         if ($access_handler->canCurrentUserEdit($this->object)) {
-            $manager->addAdminRepositoryTabs();
+            $manager->addAdminRepositoryTabs($this->object->getRefId());
         }
     }
 

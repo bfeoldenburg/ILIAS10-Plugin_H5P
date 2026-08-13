@@ -97,7 +97,8 @@ abstract class ilH5PAbstractGUI
             $this->translator,
             $DIC->ui()->mainTemplate(), // ILIAS 7 PHPDoc is wrong, ignore type-missmatch.
             $DIC->ctrl(),
-            $DIC->tabs()
+            $DIC->tabs(),
+            $DIC->language()
         );
 
         $this->post_request = new ArrayBasedRequestWrapper(

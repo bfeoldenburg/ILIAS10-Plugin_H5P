@@ -22,6 +22,7 @@ declare(strict_types=1);
  * @ilCtrl_isCalledBy ilObjH5PGUI: ilH5PConfigGUI
  *
  * @ilCtrl_Calls      ilObjH5PGUI: ilPermissionGUI
+ * @ilCtrl_Calls      ilObjH5PGUI: ilLearningProgressGUI
  * @ilCtrl_Calls      ilObjH5PGUI: ilInfoScreenGUI
  * @ilCtrl_Calls      ilObjH5PGUI: ilObjectCopyGUI
  * @ilCtrl_Calls      ilObjH5PGUI: ilH5PObjectSettingsGUI
@@ -56,7 +57,8 @@ class ilObjH5PGUI extends ilObjectPluginGUI
             $plugin,
             $this->tpl,
             $this->ctrl,
-            $this->tabs
+            $this->tabs,
+            $DIC->language()
         );
     }
 
@@ -141,7 +143,18 @@ class ilObjH5PGUI extends ilObjectPluginGUI
     protected function setTabs(): void
     {
         if (self::CMD_EDIT_PERMISSIONS === $this->ctrl->getCmd()) {
-            $this->tab_manager->addAdminRepositoryTabs();
+            $this->tab_manager->addAdminRepositoryTabs($this->object->getRefId());
+            return;
+        }
+
+        if (0 === strcasecmp(ilLearningProgressGUI::class, $this->ctrl->getNextClass())) {
+            if ($this->access->checkAccess('write', '', $this->object->getRefId())) {
+                $this->tab_manager->addAdminRepositoryTabs($this->object->getRefId());
+            } else {
+                $this->tab_manager->addUserRepositoryTabs($this->object->getRefId());
+            }
+
+            $this->tab_manager->setCurrentTab(ilH5PGlobalTabManager::TAB_LEARNING_PROGRESS);
         }
     }
 

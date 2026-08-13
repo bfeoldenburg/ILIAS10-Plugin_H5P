@@ -117,7 +117,7 @@ class ilH5PDeleteOldMarkedFiles extends ilCronJob
 
         // delete marked files individually because they are not located in H5Ps temp dir.
         foreach ($marked_files as $file) {
-            $path = ILIAS_ABSOLUTE_PATH . '/' . $file->getPath();
+            $path = ILIAS_ABSOLUTE_PATH . '/public/' . ltrim($file->getPath(), '/');
             if (file_exists($path)) {
                 $status = $status && $this->deleteFile($path);
             } else {
@@ -132,7 +132,7 @@ class ilH5PDeleteOldMarkedFiles extends ilCronJob
         }
 
         // delete the H5P temp dir to purge all other temporarily saved files.
-        if (file_exists($temp_dir = ILIAS_ABSOLUTE_PATH . "/" . IContainer::H5P_STORAGE_DIR . "/temp")) {
+        if (file_exists($temp_dir = ilH5PPlugin::getH5PStoragePath() . "/temp")) {
             $status = $status && $this->deleteDirectory($temp_dir);
         }
 

@@ -12,20 +12,20 @@ use srag\Plugins\H5P\File\FileUploadCommunicator;
 interface IContainer
 {
     /**
-     * Holds the H5P storage path relative to the ILIAS root directory
+     * Holds the H5P storage path relative to the public web root
      * (accessible via web).
      */
     public const H5P_STORAGE_DIR = \ILIAS_WEB_DIR . "/" . \CLIENT_ID . "/h5p";
 
     /**
      * Holds the path of the H5P editor package relative to the
-     * ILIAS root directory (accessible via web).
+     * public web root (accessible via web).
      */
     public const H5P_EDITOR_DIR = \ilH5PPlugin::PLUGIN_DIR . 'vendor/h5p/h5p-editor';
 
     /**
      * Holds the path of the H5P kernel package relative to the
-     * ILIAS root directory (accessible via web).
+     * public web root (accessible via web).
      */
     public const H5P_KERNEL_DIR = \ilH5PPlugin::PLUGIN_DIR . 'vendor/h5p/h5p-core';
 

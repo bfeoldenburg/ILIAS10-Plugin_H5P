@@ -17,6 +17,7 @@ class ilH5PGlobalTabManager
     public const TAB_LIBRARIES = "libraries";
     public const TAB_RESULTS = "results";
     public const TAB_PERMISSIONS = "perm_settings";
+    public const TAB_LEARNING_PROGRESS = "learning_progress";
 
     /**
      * @var ITranslator
@@ -38,16 +39,23 @@ class ilH5PGlobalTabManager
      */
     protected $tabs;
 
+    /**
+     * @var ilLanguage
+     */
+    protected $language;
+
     public function __construct(
         ITranslator $translator,
         ilGlobalTemplateInterface $template,
         ilCtrl $ctrl,
-        ilTabsGUI $tabs
+        ilTabsGUI $tabs,
+        ilLanguage $language
     ) {
         $this->translator = $translator;
         $this->template = $template;
         $this->ctrl = $ctrl;
         $this->tabs = $tabs;
+        $this->language = $language;
     }
 
     public function addShowContentTab(): self
@@ -134,25 +142,49 @@ class ilH5PGlobalTabManager
         return $this;
     }
 
-    public function addUserRepositoryTabs(): self
+    public function addLearningProgressTab(int $ref_id): self
+    {
+        if (!ilLearningProgressAccess::checkAccess($ref_id)) {
+            return $this;
+        }
+
+        $this->tabs->addTab(
+            self::TAB_LEARNING_PROGRESS,
+            $this->language->txt(self::TAB_LEARNING_PROGRESS),
+            $this->ctrl->getLinkTargetByClass(
+                [ilObjPluginDispatchGUI::class, ilObjH5PGUI::class, ilLearningProgressGUI::class]
+            )
+        );
+
+        return $this;
+    }
+
+    public function addUserRepositoryTabs(?int $ref_id = null): self
     {
         // ILIAS will not render single tabs by default, therefore we
         // need to manually allow it.
         $this->tabs->setForcePresentationOfSingleTab(true);
 
-        return $this->addShowContentTab();
+        $this->addShowContentTab();
+
+        return (null !== $ref_id) ? $this->addLearningProgressTab($ref_id) : $this;
     }
 
-    public function addAdminRepositoryTabs(): self
+    public function addAdminRepositoryTabs(?int $ref_id = null): self
     {
         // clears permission tab in repository context.
         $this->tabs->clearTargets();
 
-        return $this
+        $this
             ->addShowContentTab()
             ->addManageContentTab()
-            ->addObjectSettingsTab()
-            ->addPermissionTab();
+            ->addObjectSettingsTab();
+
+        if (null !== $ref_id) {
+            $this->addLearningProgressTab($ref_id);
+        }
+
+        return $this->addPermissionTab();
     }
 
     public function addAdministrationTabs(): self

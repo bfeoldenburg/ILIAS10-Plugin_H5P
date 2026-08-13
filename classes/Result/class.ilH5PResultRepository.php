@@ -300,13 +300,22 @@ class ilH5PResultRepository implements IResultRepository
         }
 
         $status->store();
+        $this->updateLearningProgress($status->getObjId(), $status->getUserId());
     }
 
     public function deleteSolvedStatus(ISolvedStatus $status): void
     {
         $this->abortIfNoActiveRecord($status);
 
+        $obj_id = $status->getObjId();
+        $user_id = $status->getUserId();
         $status->delete();
+        $this->updateLearningProgress($obj_id, $user_id);
+    }
+
+    private function updateLearningProgress(int $obj_id, int $user_id): void
+    {
+        ilLPStatusWrapper::_updateStatus($obj_id, $user_id, null, true);
     }
 
     protected function getContentRepository(): IContentRepository

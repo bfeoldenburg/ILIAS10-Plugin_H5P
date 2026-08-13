@@ -288,7 +288,7 @@ class ilH5PContainer implements IContainer
     public function getFileStorage(): \H5PFileStorage
     {
         if (null === $this->h5p_file_storage) {
-            $this->h5p_file_storage = new H5PDefaultStorage(ILIAS_ABSOLUTE_PATH . "/" . self::H5P_STORAGE_DIR);
+            $this->h5p_file_storage = new H5PDefaultStorage(ilH5PPlugin::getH5PStoragePath());
         }
 
         return $this->h5p_file_storage;

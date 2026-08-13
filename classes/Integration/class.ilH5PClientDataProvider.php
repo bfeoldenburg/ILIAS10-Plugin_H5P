@@ -114,7 +114,12 @@ class ilH5PClientDataProvider implements IClientDataProvider
 
         $language_specific_js = IContainer::H5P_EDITOR_DIR . '/language/' . $this->user->getLanguage() . '.js';
 
-        if (file_exists((ILIAS_ABSOLUTE_PATH . '/' . $language_specific_js))) {
+        $language_specific_path = ilH5PPlugin::PLUGIN_PATH
+            . 'vendor/h5p/h5p-editor/language/'
+            . $this->user->getLanguage()
+            . '.js';
+
+        if (file_exists($language_specific_path)) {
             $editor_js_files[] = $language_specific_js;
         }
 

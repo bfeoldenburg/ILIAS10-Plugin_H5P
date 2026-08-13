@@ -78,8 +78,17 @@ class ilH5PContentGUI extends ilH5PAbstractGUI
 
         $content =
             $this->getRequestedContent($this->get_request) ??
-            $this->getFirstUnsolvedContent($this->object->getRefId(), $this->user->getId()) ??
-            $this->repositories->content()->getFirstContentOf($this->object->getRefId());
+            $this->getFirstUnsolvedContent($this->object->getId(), $this->user->getId()) ??
+            $this->repositories->content()->getFirstContentOf($this->object->getId());
+
+        if (null !== $content) {
+            ilLearningProgress::_tracProgress(
+                $this->user->getId(),
+                $this->object->getId(),
+                $this->object->getRefId(),
+                $this->object->getType()
+            );
+        }
 
         $state = (null !== $content) ?
             $this->repositories->content()->getContentStateOfUser(
@@ -269,7 +278,7 @@ class ilH5PContentGUI extends ilH5PAbstractGUI
 
         $this->h5p_container->getExportKernel()->filterParameters($content);
 
-        $export_file = IContainer::H5P_STORAGE_DIR . "/exports/" . $content["slug"] . "-" . $content["id"] . ".h5p";
+        $export_file = ilH5PPlugin::getH5PStoragePath() . "/exports/" . $content["slug"] . "-" . $content["id"] . ".h5p";
 
         ilFileDelivery::deliverFileAttached($export_file, $content["slug"] . ".h5p", null, true);
     }
@@ -338,9 +347,9 @@ class ilH5PContentGUI extends ilH5PAbstractGUI
     protected function setupCurrentTabs(ilH5PAccessHandler $access_handler, ilH5PGlobalTabManager $manager): void
     {
         if ($access_handler->canCurrentUserEdit($this->object)) {
-            $manager->addAdminRepositoryTabs();
+            $manager->addAdminRepositoryTabs($this->object->getRefId());
         } else {
-            $manager->addUserRepositoryTabs();
+            $manager->addUserRepositoryTabs($this->object->getRefId());
         }
     }
 

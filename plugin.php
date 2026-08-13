@@ -1,10 +1,11 @@
 <?php
 
 $id = "xhfp";
-$version = "6.4.0";
-$ilias_min_version = "9.0";
-$ilias_max_version  = "9.999";
-$responsible        = "sr solutions ag";
-$responsible_mail   = "support@sr.solutions";
+$version = "7.0.0";
+$ilias_min_version = "10.0";
+$ilias_max_version  = "10.999";
+$responsible        = "BFE-Oldenburg";
+$responsible_mail   = "support@bfe.de";
 $supports_export    = true;
 $supports_cli_setup = true;
+$learning_progress  = true;

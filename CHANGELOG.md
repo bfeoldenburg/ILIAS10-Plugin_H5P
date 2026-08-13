@@ -1,5 +1,11 @@
 # H5P Changelog
 
+## 7.0.0
+
+- Added compatibility with ILIAS 10 and its `public/` web root.
+- Updated the supported PHP version to match ILIAS 10.
+- Added ILIAS learning-progress support based on H5P access, results and completion status.
+
 ## 6.4.0
 
 - Adds weekly cron-job for deleting .h5p export files (requires H5PCron plugin).

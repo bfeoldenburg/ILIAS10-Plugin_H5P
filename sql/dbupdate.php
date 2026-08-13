@@ -1158,7 +1158,7 @@ if ($ilDB->tableExists('rep_robj_xhfp_opt_n')) {
 
 $last_unaffected_create_date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', '2023-02-13 59:59:59');
 $date_for_updated_libraries = new DateTimeImmutable();
-$h5p_library_storage = ILIAS_ABSOLUTE_PATH . '/' . ILIAS_WEB_DIR . '/' . CLIENT_ID . '/h5p/libraries';
+$h5p_library_storage = ilH5PPlugin::getH5PStoragePath() . '/libraries';
 $h5p_installed_libraries = (@scandir($h5p_library_storage)) ?: [];
 
 foreach ($h5p_installed_libraries as $h5p_library_dir) {

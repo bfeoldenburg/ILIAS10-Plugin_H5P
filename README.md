@@ -8,16 +8,16 @@ This project is licensed under the GPL-3.0-only license
 
 ## Requirements
 
-* ILIAS 9.0 - 9.999
-* PHP >=8.1
+* ILIAS 10.0 - 10.999
+* PHP >=8.2 <8.4
 
 ## Installation
 
 Start at your ILIAS root directory
 
 ```bash
-mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject
-cd Customizing/global/plugins/Services/Repository/RepositoryObject
+mkdir -p public/Customizing/global/plugins/Services/Repository/RepositoryObject
+cd public/Customizing/global/plugins/Services/Repository/RepositoryObject
 git clone https://github.com/srsolutionsag/H5P.git H5P
 ```
 
@@ -60,6 +60,15 @@ You can manage H5P content results:
 
 - View result points of users which has solved H5P contents
 - Delete results
+
+##### Learning progress
+
+The repository object supports the native ILIAS learning progress:
+
+- Opening an H5P content sets the status to **in progress**.
+- Each distinct H5P content with a result contributes to the percentage.
+- Finishing all contents, or having a result for every content, sets the status to **completed**.
+- H5P scores are displayed as results but do not produce the ILIAS **failed** status because H5P has no universal passing threshold.
 
 ##### Settings
 

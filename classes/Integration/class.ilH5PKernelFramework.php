@@ -1370,7 +1370,7 @@ class ilH5PKernelFramework implements H5PFrameworkInterface
     protected function deleteLibraryFiles(ILibrary $installed_library): void
     {
         H5PCore::deleteFileTree(
-            IContainer::H5P_STORAGE_DIR . "/libraries/" .
+            ilH5PPlugin::getH5PStoragePath() . "/libraries/" .
             $installed_library->getMachineName() . "-" .
             $installed_library->getMajorVersion() . "." .
             $installed_library->getMinorVersion()

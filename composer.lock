@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "956859caf1ac5409c0f8a5d8fd2d6cd5",
+    "content-hash": "bb47ab18efad7722fc80e14e363688f2",
     "packages": [
         {
             "name": "h5p/h5p-core",
@@ -139,8 +139,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2"
+        "php": ">=8.2 <8.4"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

@@ -15,7 +15,11 @@ use ILIAS\DI\Container;
  */
 class ilH5PPlugin extends ilRepositoryObjectPlugin implements ITranslator
 {
-    public const PLUGIN_DIR = "./Customizing/global/plugins/Services/Repository/RepositoryObject/H5P/";
+    /** Path relative to the ILIAS 10 public web root. */
+    public const PLUGIN_DIR = "Customizing/global/plugins/Services/Repository/RepositoryObject/H5P/";
+
+    /** Absolute filesystem path to the plugin directory. */
+    public const PLUGIN_PATH = __DIR__ . '/../';
     public const PLUGIN_NAME = "H5P";
     public const PLUGIN_ID = "xhfp";
 
@@ -77,6 +81,7 @@ class ilH5PPlugin extends ilRepositoryObjectPlugin implements ITranslator
                 $dic["ui.template_factory"],
                 new ilH5PResourceRegistry($dic['tpl']),
                 $this->getContainer()->getTranslator(),
+                $dic->language(),
                 $default_renderer($dic)
             );
         };
@@ -88,11 +93,26 @@ class ilH5PPlugin extends ilRepositoryObjectPlugin implements ITranslator
     }
 
     /**
+     * Returns the absolute H5P storage path in both fully initialized web
+     * requests (where ILIAS_WEB_DIR is "data") and setup contexts (where it
+     * can still be "public/data").
+     */
+    public static function getH5PStoragePath(): string
+    {
+        $web_dir = trim(ILIAS_WEB_DIR, '/');
+        if (!str_starts_with($web_dir, 'public/')) {
+            $web_dir = 'public/' . $web_dir;
+        }
+
+        return ILIAS_ABSOLUTE_PATH . '/' . $web_dir . '/' . CLIENT_ID . '/h5p';
+    }
+
+    /**
      * @inheritDoc
      */
     protected function uninstallCustom(): void
     {
-        H5PCore::deleteFileTree(IContainer::H5P_STORAGE_DIR);
+        H5PCore::deleteFileTree(self::getH5PStoragePath());
 
         $this->db->dropTable('rep_robj_xhfp_cnt', false);
         $this->db->dropTable('rep_robj_xhfp_cont', false);

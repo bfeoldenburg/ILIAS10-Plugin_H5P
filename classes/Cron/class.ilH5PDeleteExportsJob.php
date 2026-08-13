@@ -104,7 +104,7 @@ class ilH5PDeleteExportsJob extends ilCronJob
         $result = new ilCronJobResult();
         $status = true;
 
-        $export_dir = ILIAS_ABSOLUTE_PATH . "/" . IContainer::H5P_STORAGE_DIR . "/exports";
+        $export_dir = ilH5PPlugin::getH5PStoragePath() . "/exports";
         if (file_exists($export_dir)) {
             $status = $this->deleteDirectory($export_dir);
             $result->setStatus(($status) ? ilCronJobResult::STATUS_OK : ilCronJobResult::STATUS_FAIL);

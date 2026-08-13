@@ -9,7 +9,7 @@ use srag\Plugins\H5P\Settings\IObjectSettings;
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  * @noinspection AutoloadingIssuesInspection
  */
-class ilObjH5P extends ilObjectPlugin
+class ilObjH5P extends ilObjectPlugin implements ilLPStatusPluginInterface
 {
     /**
      * @var ilH5PRepositoryFactory
@@ -158,5 +158,169 @@ class ilObjH5P extends ilObjectPlugin
     public function setSolveOnlyOnce(bool $solve_only_once): void
     {
         $this->settings->setSolveOnlyOnce($solve_only_once);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLPCompleted(): array
+    {
+        $completed = [];
+        foreach ($this->repositories->result()->getSolvedStatusListByObject($this->getId()) as $status) {
+            if ($status->isFinished()) {
+                $completed[] = $status->getUserId();
+            }
+        }
+
+        $number_of_contents = count($this->repositories->content()->getContentsByObject($this->getId()));
+        if ($number_of_contents > 0) {
+            $completed_content_ids = [];
+            foreach ($this->repositories->result()->getResultsByObject($this->getId()) as $result) {
+                $completed_content_ids[$result->getUserId()][$result->getContentId()] = true;
+            }
+
+            foreach ($completed_content_ids as $user_id => $content_ids) {
+                if (count($content_ids) >= $number_of_contents) {
+                    $completed[] = $user_id;
+                }
+            }
+        }
+
+        return $this->normalizeUserIds($completed);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLPNotAttempted(): array
+    {
+        $members = ilObjectLP::getInstance($this->getId())->getMembers();
+
+        return array_values(array_diff(
+            $this->normalizeUserIds($members),
+            $this->getStartedUserIds()
+        ));
+    }
+
+    /**
+     * H5P completion is independent of a passing score. Consequently the
+     * plugin does not use ILIAS' failed learning-progress state.
+     *
+     * @inheritDoc
+     */
+    public function getLPFailed(): array
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLPInProgress(): array
+    {
+        return array_values(array_diff(
+            $this->getStartedUserIds(),
+            $this->getLPCompleted()
+        ));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLPStatusForUser(int $a_user_id): int
+    {
+        if ($this->hasUserCompletedObject($a_user_id)) {
+            return ilLPStatus::LP_STATUS_COMPLETED_NUM;
+        }
+
+        $status = $this->repositories->result()->getSolvedStatus($this->getId(), $a_user_id);
+        if (null !== $status ||
+            count($this->repositories->result()->getResultsByUserAndObject($a_user_id, $this->getId())) > 0 ||
+            count($this->repositories->content()->getContentStatesByObjectAndUser($this->getId(), $a_user_id)) > 0 ||
+            count(ilChangeEvent::_lookupReadEvents($this->getId(), $a_user_id)) > 0
+        ) {
+            return ilLPStatus::LP_STATUS_IN_PROGRESS_NUM;
+        }
+
+        return ilLPStatus::LP_STATUS_NOT_ATTEMPTED_NUM;
+    }
+
+    /**
+     * Returns the percentage of distinct H5P contents completed by a user.
+     * ILIAS detects this optional plugin method automatically.
+     */
+    public function getPercentageForUser(int $a_user_id): int
+    {
+        $status = $this->repositories->result()->getSolvedStatus($this->getId(), $a_user_id);
+        if (null !== $status && $status->isFinished()) {
+            return 100;
+        }
+
+        $contents = $this->repositories->content()->getContentsByObject($this->getId());
+        if ([] === $contents) {
+            return 0;
+        }
+
+        $completed_content_ids = [];
+        foreach ($this->repositories->result()->getResultsByUserAndObject($a_user_id, $this->getId()) as $result) {
+            $completed_content_ids[$result->getContentId()] = true;
+        }
+
+        return min(100, (int) round(100 * count($completed_content_ids) / count($contents)));
+    }
+
+    private function hasUserCompletedObject(int $user_id): bool
+    {
+        $status = $this->repositories->result()->getSolvedStatus($this->getId(), $user_id);
+        if (null !== $status && $status->isFinished()) {
+            return true;
+        }
+
+        $contents = $this->repositories->content()->getContentsByObject($this->getId());
+        if ([] === $contents) {
+            return false;
+        }
+
+        $completed_content_ids = [];
+        foreach ($this->repositories->result()->getResultsByUserAndObject($user_id, $this->getId()) as $result) {
+            $completed_content_ids[$result->getContentId()] = true;
+        }
+
+        return count($completed_content_ids) >= count($contents);
+    }
+
+    /**
+     * @return int[]
+     */
+    private function getStartedUserIds(): array
+    {
+        $user_ids = [];
+
+        foreach ($this->repositories->result()->getSolvedStatusListByObject($this->getId()) as $status) {
+            $user_ids[] = $status->getUserId();
+        }
+        foreach ($this->repositories->result()->getResultsByObject($this->getId()) as $result) {
+            $user_ids[] = $result->getUserId();
+        }
+        foreach ($this->repositories->content()->getContentStatesByObject($this->getId()) as $state) {
+            $user_ids[] = $state->getUserId();
+        }
+        foreach (ilChangeEvent::_lookupReadEvents($this->getId()) as $event) {
+            $user_ids[] = (int) $event['usr_id'];
+        }
+
+        return $this->normalizeUserIds($user_ids);
+    }
+
+    /**
+     * @param mixed[] $user_ids
+     * @return int[]
+     */
+    private function normalizeUserIds(array $user_ids): array
+    {
+        return array_values(array_unique(array_filter(
+            array_map('intval', $user_ids),
+            static fn (int $user_id): bool => $user_id > 0
+        )));
     }
 }

@@ -72,6 +72,11 @@ class Renderer extends DecoratedRenderer
      */
     protected $translator;
 
+    /**
+     * @var \ilLanguage
+     */
+    protected $language;
+
     public function __construct(
         IClientDataProvider $client_data_provider,
         H5PComponentFactory $h5p_component_factory,
@@ -80,6 +85,7 @@ class Renderer extends DecoratedRenderer
         TemplateFactory $template_factory,
         IResourceRegistry $registry,
         ITranslator $translator,
+        \ilLanguage $language,
         IRenderer $default
     ) {
         parent::__construct($default);
@@ -91,6 +97,7 @@ class Renderer extends DecoratedRenderer
         $this->template_factory = $template_factory;
         $this->registry = $registry;
         $this->translator = $translator;
+        $this->language = $language;
     }
 
     /**
@@ -395,11 +402,18 @@ class Renderer extends DecoratedRenderer
         $tpl = $this->getIliasTemplate('Input', 'tpl.context_form.html');
 
         $tpl->setVariable("INPUT", $input_html);
+        $tpl->setVariable(
+            "UI_COMPONENT_NAME",
+            str_replace(' ', '-', strtolower($component->getCanonicalName()))
+        );
+        $tpl->setVariable("INPUT_NAME", (string) $component->getName());
 
         if ($id_pointing_to_input) {
             $tpl->setCurrentBlock('for');
             $tpl->setVariable("ID", $id_pointing_to_input);
             $tpl->parseCurrentBlock();
+        } else {
+            $tpl->touchBlock('tabindex');
         }
 
         $label = $component->getLabel();
@@ -412,11 +426,19 @@ class Renderer extends DecoratedRenderer
 
         $required = $component->isRequired();
         if ($required) {
-            $tpl->touchBlock("required");
+            $tpl->setCurrentBlock('required');
+            $tpl->setVariable("REQUIRED_ARIA", $this->language->txt('required_field'));
+            $tpl->parseCurrentBlock();
+        }
+
+        if ($component->isDisabled()) {
+            $tpl->touchBlock("disabled");
         }
 
         $error = $component->getError();
         if ($error) {
+            $tpl->setVariable("ERROR_LABEL", $this->language->txt('ui_error'));
+            $tpl->setVariable("ERROR_ID", $this->java_script_binding->createId());
             $tpl->setVariable("ERROR", $error);
         }
 
@@ -454,7 +476,7 @@ class Renderer extends DecoratedRenderer
     protected function getIliasTemplate(string $component, string $template_name): Template
     {
         return $this->template_factory->getTemplate(
-            "src/UI/templates/default/$component/$template_name",
+            "components/ILIAS/UI/src/templates/default/$component/$template_name",
             true,
             true
         );
